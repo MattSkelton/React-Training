@@ -144,7 +144,7 @@ const App = () => {
       <button onClick={hello('react')}>react</button>
       <button onClick={hello('function')}>function</button>
       {right}
-      <History allClicks={allClicks} />
+      <History total={total} />
       <Total total={total}/>
     </div>
   )
