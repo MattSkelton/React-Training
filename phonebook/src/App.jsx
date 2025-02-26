@@ -1,5 +1,5 @@
 import { useState , useEffect} from 'react'
-import axios from 'axios'
+import phonebookServices from './services/phonebookServices'
 import Listing from './components/listing'
 import Filter from './components/Filter'
 
@@ -24,15 +24,11 @@ const App = () => {
     setFilter(event.target.value)
   }
 
-  useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
-      })
-  }, [])
+  phonebookServices
+  .getAll()
+  .then(initialPhonebook => {
+    setPersons(initialPhonebook)
+  })
 
   const addName = (event) => {
     event.preventDefault()
@@ -48,12 +44,37 @@ const App = () => {
       number: newNumber,
       id: String(persons.length + 1),
     }
-  
-    setPersons(persons.concat(nameObject))
-    setNewPerson('')
-    setNewNumber('')
+    
+    phonebookServices
+    .create(nameObject)
+    .then(returnedObject => {
+      console.log({returnedObject})
+      setPersons(persons.concat(returnedObject))
+      setNewPerson('')
+      setNewNumber('')
+    })
+
   }
 
+  const deleteListing = ({id}) => {  
+    let updatedArray = persons
+    console.log({id})
+    const index = updatedArray.findIndex(person => person.id === id)
+
+    if (index === -1) {
+      alert(`${newPerson} is not in the phonebook`);
+      return;
+    }
+
+    updatedArray = updatedArray.splice(0, index)
+  
+    phonebookServices
+    .deleteListing(id)
+    .then(returnedObject => {
+      setPersons(updatedArray)
+    })
+  }
+  
   const listingsToShow = persons.filter(person => 
     person.name.toLowerCase().includes(filter.toLowerCase()))
 
@@ -88,7 +109,7 @@ const App = () => {
       <h2>Numbers</h2>
       <ul>
         {listingsToShow.map(person => 
-          <Listing key={person.id} name={person.name} number ={person.number}/>
+          <Listing key={person.id} id={person.id} name={person.name} number={person.number} onClick={deleteListing}/>
         )}
       </ul>
       ...

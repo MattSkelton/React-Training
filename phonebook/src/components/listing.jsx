@@ -1,7 +1,9 @@
-const Listing = ({name, number}) => {
-    console.log("Name: " + {name})
+const Listing = ({id, name, number, onClick}) => {
     return (
-      <li>{name}: {number}</li>
+      <div>
+        <li>{name}: {number}</li>
+        <button id="delete" onClick={() => onClick({id})}>delete</button>
+      </div>
     )
   }
 export default Listing  
